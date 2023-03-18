@@ -23,9 +23,9 @@ def get_request(url, params, headers={'Content-Type': 'application/json'}, auth=
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
-def post_request(url, params, jsonLoad):
+def post_request(url, params, json_load):
     try:
-        response = requests.post(url, params, jsonLoad)
+        response = requests.post(url, params, json_load)
         return json.loads(response.text)
     except Exception as e:
         print("Exception occurred {}".format(e))
@@ -41,7 +41,7 @@ def get_dealers_from_cf(url, **kwargs):
     if json_result:
         dealerships = json_result
         for dealership in dealerships:
-            dealer = CarDealer(id=dealership["id"], state=dealership["state"], st=dealership["st"], 
+            dealer = CarDealer(id=dealership["id"], city=dealership["city"], state=dealership["state"], st=dealership["st"], 
                                    address=dealership["address"], zip=dealership["zip"], lat=dealership["lat"],
                                    long=dealership["long"], short_name=dealership["short_name"], full_name=dealership["full_name"])
             results.append(dealer)
@@ -51,15 +51,15 @@ def get_dealers_from_cf(url, **kwargs):
 # def get_dealer_by_id_from_cf(url, dealerId):
 # - Call get_request() with specified arguments
 # - Parse JSON results into a DealerView object list
-def get_dealer_reviews_from_cf(url, dealerId):
+def get_dealer_reviews_from_cf(url, dealer_id):
     results = []
-    json_result = get_request(url, params={"dealership": dealerId})
+    json_result = get_request(url, params={"dealership": dealer_id})
     if json_result:
         reviews = json_result
         for review in reviews:
-            results.append( DealerReview(id=reviews["id"], state=reviews["name"], dealership=reviews["dealership"], 
-                                   purchase=reviews["purchase"], review=reviews["review"], purchase_date=reviews["purchase_date"],
-                                   car_make=reviews["car_make"], car_model=reviews["car_model"], car_year=reviews["car_year"], sentiment=analyze_review_sentiments(reviews["review"])))
+            results.append( DealerReview(id=review["id"], name=review["name"], dealership=review["dealership"], 
+                                   purchase=review["purchase"], review=review["review"], purchase_date=review["purchase_date"],
+                                   car_make=review["car_make"], car_model=review["car_model"], car_year=review["car_year"], sentiment=analyze_review_sentiments(review["review"])))
     return results
 
 # Create an `analyze_review_sentiments` method to call Watson NLU and analyze text

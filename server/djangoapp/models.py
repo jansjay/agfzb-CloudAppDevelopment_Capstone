@@ -58,7 +58,7 @@ class CarDealer:
     def __init__(self, id, city, state, st, address, zip, lat, long, short_name, full_name):
         self.id = id
         self.city = city
-        self.state = st
+        self.state = state
         self.st = st
         self.address = address
         self.zip = zip
