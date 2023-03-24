@@ -4,10 +4,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-from . import models
+from .models import CarModel
 # from .restapis import related methods
 from . import restapis
-from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_from_cf, analyze_review_sentiments, post_request
+from .restapis import get_dealers_from_cf, get_dealer_reviews_from_cf, get_dealer_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -102,6 +102,25 @@ def get_dealer_details(request, dealer_id):
         return render(request,'djangoapp/dealer_details.html', context)
 
 # Create a `add_review` view to submit a review
-# def add_review(request, dealer_id):
-# ...
+def add_review(request, dealer_id):
+    if request.method == "GET":
+        context = {}
+        context["dealership"] = get_dealer_from_cf(get_delaership_url, dealer_id)
+        context['cars'] = CarModel.objects.filter(dealer_id=int(dealer_id)).all()
+        return render(request,'djangoapp/add_review.html', context)
+    if request.method == "POST" and request.user.is_authenticated:
+        review_id = len(get_dealer_reviews_from_cf(get_review_url, dealer_id)) + 1
+        car = CarModel.objects.get(pk=int(request.POST['car']))
+        json_load = {"review" : {   "id": review_id,
+                                    "name": request.user.username,
+                                    "dealership": dealer_id,
+                                    "review": request.POST['content'],
+                                    'purchase': bool(request.POST.get('purchase',False)),
+                                    'car_make': car.car_make.name,
+                                    'car_model': car.name,
+                                    'car_year': car.year,
+                                    'purchase_date': datetime.strptime(request.POST['purchasedate'], "%Y-%m-%d").strftime("%d/%m/%y")}}
+        post_request(url=save_review_url, params=None, json_load=json_load)
+        return redirect("djangoapp:details", dealer_id=dealer_id)
+    return redirect("djangoapp:index")
 

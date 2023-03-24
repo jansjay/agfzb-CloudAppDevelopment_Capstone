@@ -25,8 +25,9 @@ def get_request(url, params, headers={'Content-Type': 'application/json'}, auth=
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
 def post_request(url, params, json_load):
+    print(json_load)
     try:
-        response = requests.post(url, params, json_load)
+        response = requests.post(url, params=params, json=json_load,headers={'Content-type': 'application/json', 'Accept': 'application/json'})
         return json.loads(response.text)
     except Exception as e:
         print("Exception occurred {}".format(e))

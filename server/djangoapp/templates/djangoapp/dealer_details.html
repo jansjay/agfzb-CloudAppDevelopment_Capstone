@@ -5,10 +5,10 @@
 </head>
 <body>
     <!--Add a nav bar here -->
-    {% include "djangoapp/includes/navigator.html" %}        
+    {% include "djangoapp/includes/navigator.html" with dealer_id=dealership.id %}        
     <!-- Add reviews as cards -->
     <div class="container-fluid">
-        <p class="lead">Reviews for Dealership {{ dealership.full_name }}</p>
+        <p class="lead">Reviews for {{ dealership.full_name }}</p>
         <div class="card-columns">
             {% for review in reviews %}
             <div class="card">
