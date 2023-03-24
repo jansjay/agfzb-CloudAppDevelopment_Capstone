@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: dealership
+  name: dealership
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: dealership
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: dealership
+    spec:
+      containers:
+      - image: us.icr.io/sn-labs-sanjayajayas/dealership:latest
+        name: dealership
+        env:
+        - name: WATSON_API_KEY
+          value: "ENTER_PROPER_VALUE"
+        - name: WATSON_URL
+          value: "https://ENTER_PROPER_VALUE"
+        - name: GET_REVIEW_URL
+          value: "https://ENTER_PROPER_VALUE"
+        - name: GET_DEALERSHIP_URL
+          value: "https://ENTER_PROPER_VALUE"
+        - name: SAVE_REVIEW_URL
+          value: "https://ENTER_PROPER_VALUE"
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+      restartPolicy: Always
